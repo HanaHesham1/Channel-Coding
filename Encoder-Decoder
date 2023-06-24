@@ -1,0 +1,92 @@
+import numpy as np
+import random as rm
+import matplotlib.pyplot as plt
+pBit=0.03593
+pktLength=np.arange(10,61)
+
+m=5
+states=["0","1","2","3","4","5"]
+transitionName=[["00","01","02","03","04","05"],["10","11","12","13","14","15"],["20","21","22","23","24","25"],
+                ["30","31","32","33","34","35"],["40","41","42","43","44","45"],["50","51","52","53","54","55"]]
+# A function that implements the Markov model to forecast the state/mood.
+# Choose the starting state
+    # Shall store the sequence of states taken. So, this only has the starting state for now.
+    # To calculate the probability of the activityList
+prob = 1
+delays=np.ones(51)
+for i in range (len(pktLength)-1):
+    p=1-np.power((1-pBit),pktLength[i])
+    #print(prob) 
+    prob=1
+    currentState = "0"
+    stateList = [currentState]
+    transitionMatrix = [[p,1-p,0,0,0,0],[0,p,1-p,0,0,0],[0,0,p,1-p,0,0],[0,0,0,p,1-p,0],[0,0,0,0,p,1-p],[1,0,0,0,0,0]]
+    while stateList[len(stateList)-1]!="5":
+        if currentState == "0":
+            change = np.random.choice(transitionName[0],replace=True,p=transitionMatrix[0])
+            if change == "00":
+                prob = prob * transitionMatrix[0][0]
+                stateList.append("0")
+                pass
+            elif change == "01":
+                prob = prob * transitionMatrix[0][1]
+                currentState = "1"
+                stateList.append("1")
+     
+        elif currentState == "1":
+                change = np.random.choice(transitionName[1],replace=True,p=transitionMatrix[1])
+                if change == "11":
+                    prob = prob * transitionMatrix[1][1]
+                    stateList.append("1")
+                    pass
+                elif change == "12":
+                    prob = prob * transitionMatrix[1][2]
+                    currentState = "2"
+                    stateList.append("2")
+        
+        elif currentState == "2":
+            change = np.random.choice(transitionName[2],replace=True,p=transitionMatrix[2])
+            if change == "22":
+                prob = prob * transitionMatrix[2][2]
+                stateList.append("2")
+                pass
+            elif change == "23":
+                prob = prob * transitionMatrix[2][3]
+                currentState = "3"
+                stateList.append("3")
+        
+        elif currentState == "3":
+            change = np.random.choice(transitionName[3],replace=True,p=transitionMatrix[3])
+            if change == "33":
+                prob = prob * transitionMatrix[3][3]
+                stateList.append("3")
+                pass
+            elif change == "34":
+                prob = prob * transitionMatrix[3][4]
+                currentState = "4"
+                stateList.append("4")
+          
+        elif currentState == "4":
+            change = np.random.choice(transitionName[4],replace=True,p=transitionMatrix[4])
+            if change == "44":
+                prob = prob * transitionMatrix[4][4]
+                stateList.append("4")
+                pass
+            elif change == "45":
+                prob = prob * transitionMatrix[4][5]
+                currentState = "5"
+                stateList.append("5")
+        elif currentState == "5":
+            change = np.random.choice(transitionName[5],replace=True,p=transitionMatrix[5])
+            if change == "00":
+                prob = prob * transitionMatrix[5][0]
+                stateList.append("0")
+                pass 
+       # print(stateList)    
+    print(prob)
+    print(" ")
+    stateList=[]
+    delay = 1/prob    
+    delays[i]=delay
+    
+plt.plot(pktLength,delays)
